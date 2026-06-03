@@ -18,4 +18,17 @@ public class BusService : IBusManager
     {
         return _busList;
     }
+
+    public List<Bus> ShowAvailableBuses()
+    {
+        List<Bus> AvailableBuses = new List<Bus>();
+        foreach (Bus bus in _busList)
+        {
+            if (bus.IsAvailable)
+            {
+                AvailableBuses.Add(bus);
+            }
+        }
+        return AvailableBuses;
+    }
 }
