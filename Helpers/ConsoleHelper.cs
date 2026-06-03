@@ -61,9 +61,6 @@ public class ConsoleHelper
 
         // 6. Footer Closing
         Console.WriteLine("╚══════════════════════════════════════════════════════════╝");
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write("Enter your choice (1-12): ");
-        Console.ResetColor();
     }
 
     public static void DisplayTitle(string title)

@@ -9,4 +9,5 @@ public interface IBookingManager
     // Invoice? InvoiceDetails(string invoiceId);
     void ConfirmPayment(string invoiceId);
     List<Invoice> UserPaidInvoice(string userId);
+    bool IsValidInvoiceId(string invoiceId);
 }

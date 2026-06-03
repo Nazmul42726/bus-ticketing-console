@@ -27,7 +27,8 @@ public class BookingService : IBookingManager
     } 
     public void ConfirmPayment(string invoiceId)
     {
-        Invoice invoice = _invoiceList.FirstOrDefault(inv => inv.InvoiceId == invoiceId);
+        Invoice? invoice = _invoiceList.FirstOrDefault(inv => inv.InvoiceId == invoiceId);
+        if(invoice == null) return;
         invoice.PaymentStatus = true;
     }
     public List<Invoice> UserPaidInvoice(string userId)
@@ -41,5 +42,13 @@ public class BookingService : IBookingManager
             }
         }
         return userPaidInvoices;
+    }
+    public bool IsValidInvoiceId(string invoiceId)
+    {
+        foreach(Invoice invoice in _invoiceList)
+        {
+            if(invoice.InvoiceId == invoiceId) return true;
+        }
+        return false;
     }
 }

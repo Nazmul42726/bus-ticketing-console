@@ -18,4 +18,13 @@ public class UserService: IUserManager
     {
         return _userList;
     }
+    
+    public bool IsValidUserId(string userId)
+    {
+        foreach(User user in _userList)
+        {
+            if(user.UserId == userId) return true;
+        }
+        return false;
+    }
 }

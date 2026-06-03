@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using bus_ticketing_console.Models;
 
 namespace bus_ticketing_console.Helpers;
 
@@ -93,5 +94,26 @@ public class ValidationHelper
             return false;
         }
         return true;
+    }
+
+    public static bool IsValidSeat(string seat, int busCapacity)
+    {
+        switch (busCapacity)
+        {
+            case 28:
+                return SystemRegistry.Seats28.Contains(seat);
+            case 30:
+                return SystemRegistry.Seats30.Contains(seat);
+            case 32:
+                return SystemRegistry.Seats32.Contains(seat);
+            case 36:
+                return SystemRegistry.Seats36.Contains(seat);
+            case 40:
+                return SystemRegistry.Seats40.Contains(seat);
+            case 45:
+                return SystemRegistry.Seats45.Contains(seat);
+            default:
+                return false;
+        }
     }
 }

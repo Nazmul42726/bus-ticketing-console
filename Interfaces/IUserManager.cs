@@ -7,4 +7,5 @@ public interface IUserManager
 {
     void CreateUser(User user);
     List<User> ShowUsers();
+    bool IsValidUserId(string userId);
 }

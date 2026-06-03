@@ -12,5 +12,6 @@ public class Schedule
     public required double TicketPrice {get; set;}
     public required Bus AssignedBus {get; set;}
 
+    public List<string> BookedSeats {get; set;} = new List<string>();
     public List<string> ReservedSeats {get; set;} = new List<string>();
 }

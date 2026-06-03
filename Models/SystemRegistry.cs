@@ -42,6 +42,50 @@ public class SystemRegistry
         "No [Non-AC]"
     };
 
+    public static readonly List<string> Seats28 = new List<string>
+    {
+        "1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C",
+        "5A", "5B", "5C", "6A", "6B", "6C", "7A", "7B", "7C", "8A", "8B", "8C",
+        "9A", "9E", "9B", "9C"
+    };
+
+    public static readonly List<string> Seats30 = new List<string>
+    {
+        "1A", "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C",
+        "5A", "5B", "5C", "6A", "6B", "6C", "7A", "7B", "7C", "8A", "8B", "8C",
+        "9A", "9B", "9C", "10A", "10B", "10C"
+    };
+
+    public static readonly List<string> Seats32 = new List<string>
+    {
+        "1B", "1C", "2A", "2B", "2C", "3A", "3B", "3C", "4A", "4B", "4C",
+        "5A", "5B", "5C", "6A", "6B", "6C", "7A", "7B", "7C", "8A", "8B", "8C",
+        "9A", "9B", "9C", "10A", "10B", "10C", "11A", "11B", "11C"
+    };
+
+    public static readonly List<string> Seats36 = new List<string>
+    {
+        "1A", "1B", "1C", "1D", "2A", "2B", "2C", "2D", "3A", "3B", "3C", "3D",
+        "4A", "4B", "4C", "4D", "5A", "5B", "5C", "5D", "6A", "6B", "6C", "6D",
+        "7A", "7B", "7C", "7D", "8A", "8B", "8C", "8D", "9A", "9B", "9C", "9D"
+    };
+
+    public static readonly List<string> Seats40 = new List<string>
+    {
+        "1A", "1B", "1C", "1D", "2A", "2B", "2C", "2D", "3A", "3B", "3C", "3D",
+        "4A", "4B", "4C", "4D", "5A", "5B", "5C", "5D", "6A", "6B", "6C", "6D",
+        "7A", "7B", "7C", "7D", "8A", "8B", "8C", "8D", "9A", "9B", "9C", "9D",
+        "10A", "10B", "10C", "10D"
+    };
+
+    public static readonly List<string> Seats45 = new List<string>
+    {
+        "1A", "1B", "1C", "1D", "2A", "2B", "2C", "2D", "3A", "3B", "3C", "3D",
+        "4A", "4B", "4C", "4D", "5A", "5B", "5C", "5D", "6A", "6B", "6C", "6D",
+        "7A", "7B", "7C", "7D", "8A", "8B", "8C", "8D", "9A", "9B", "9C", "9D",
+        "10A", "10B", "10C", "10D", "11A", "11B", "11E", "11C", "11D"
+    };
+
     public static readonly string[] Cities = new string[]
     {
         "Dhaka",

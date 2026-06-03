@@ -18,6 +18,7 @@ class Program
         while (true)
         {
             ConsoleHelper.DisplayMainMenu();
+            ConsoleHelper.Prompt("Enter Your Choice (1-12)");
 
             string? input = Console.ReadLine();
             
@@ -25,36 +26,47 @@ class Program
             {
                 case "1":
                     CreateNewUser();
+                    WaitForInput();
                     break;
                 case "2":
                     ShowAllUser();
+                    WaitForInput();
                     break;
                 case "3":
                     CreateNewBus();
+                    WaitForInput();
                     break;
                 case "4":
                     ShowAllBus();
+                    WaitForInput();
                     break;
                 case "5":
                     CreateNewSchedule();
+                    WaitForInput();
                     break;
                 case "6":
                     ShowAllSchedule();
+                    WaitForInput(); 
                     break;
                 case "7":
                     ShowScheduleDetails();
+                    WaitForInput();
                     break;
                 case "8":
                     BookingTicket();
+                    WaitForInput();
                     break;
                 case "9":
                     ShowUserInvoices();
+                    WaitForInput();
                     break;
                 case "10":
                     PayInvoice();
+                    WaitForInput();
                     break;
                 case "11":
                     ShowUserTickets();
+                    WaitForInput();
                     break;
                 case "12":
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -115,7 +127,6 @@ class Program
         userManager.CreateUser(NewUser);
 
         ConsoleHelper.SuccessMessage("User Created Successfully");        
-        WaitForInput();
     }
     static void ShowAllUser()
     {
@@ -140,7 +151,6 @@ class Program
             }
             ConsoleHelper.DisplayTable(header, rows);
         }
-        WaitForInput();
     }
 
     static void CreateNewBus()          //todo: some index validation, final confirmation
@@ -228,7 +238,6 @@ class Program
 
         busManager.CreateBus(NewBus);
         ConsoleHelper.SuccessMessage("Bus Registered Successfully");
-        WaitForInput();
     }
 
     static void ShowAllBus()
@@ -263,7 +272,6 @@ class Program
             }
             ConsoleHelper.DisplayTable(header, rows);
         }
-        WaitForInput();
     }
 
     static void CreateNewSchedule() //todo: final confirmation, some validation, book bus, (now a bus can be booked multiple times)
@@ -274,7 +282,6 @@ class Program
         if (availableBuses.Count == 0)
         {
             ConsoleHelper.CautionMessage("No buses available");
-            WaitForInput();
             return;
         }
 
@@ -403,10 +410,9 @@ class Program
             TicketPrice       = confirmedPrice,
             AssignedBus       = selectedBus
         };
-
+        selectedBus.IsAvailable = false;
         scheduleManager.CreateSchedule(newSchedule);
         ConsoleHelper.SuccessMessage($"Schedule Created Successfully");
-        WaitForInput();
     }
 
     static void ShowAllSchedule()
@@ -426,7 +432,7 @@ class Program
             for (int i = 0; i < AllSchedules.Count; i++)
             {
                 Schedule schedule = AllSchedules[i];
-                int availableSeatsCount = schedule.AssignedBus.TotalCapacity - schedule.ReservedSeats.Count;
+                int availableSeatsCount = schedule.AssignedBus.TotalCapacity - schedule.BookedSeats.Count - schedule.ReservedSeats.Count;
                 string route = $"{schedule.DepartureCity} ➔ {schedule.ArrivalCity}";
 
                 rows.Add(new string[]
@@ -441,100 +447,211 @@ class Program
             }
             ConsoleHelper.DisplayTable(header, rows);
         }
-        WaitForInput();
     }
 
     static void ShowScheduleDetails()
     {
-        Console.Write("\nEnter Schedule ID: ");
+        ConsoleHelper.Prompt("Enter Schedule ID");
         string inputId = Console.ReadLine() ?? "";
 
         Schedule? schedule = scheduleManager.GetScheduleDetails(inputId);
 
         if (schedule == null)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Error: Invalid Schedule ID!");
-            Console.ResetColor();
+            ConsoleHelper.ErrorMessage("Invalid Schedule ID");
         }
         else
         {
-            Console.WriteLine($"\n[ Schedule ID: {schedule.ScheduleId} ]");
-            Console.WriteLine($"Coach Number : {schedule.CoachNumber}");
-            Console.WriteLine($"Route        : {schedule.DepartureCity} -> {schedule.ArrivalCity}");
-            Console.WriteLine($"Departure    : {schedule.DepartureDateTime}");
-            Console.WriteLine($"Ticket Price : {schedule.TicketPrice} BDT");
-            Console.WriteLine($"Assigned Bus : {schedule.AssignedBus.ModelName} ({schedule.AssignedBus.Classification})");
-            seatLayoutHelper.PrintSeatLayout(schedule.AssignedBus.TotalCapacity, schedule.ReservedSeats);
-        }
+            ConsoleHelper.DisplayTitle($"Schedule Details: {schedule.ScheduleId}");
 
-        WaitForInput();
+            string route = $"{schedule.DepartureCity} ➔ {schedule.ArrivalCity}";
+            string busInfo = $"{schedule.AssignedBus.ModelName} ({schedule.AssignedBus.Classification})";
+            string price = $"{schedule.TicketPrice:F2} BDT";
+
+            string[] header = { "Field", "Information Details" };
+            List<string[]> rows = new List<string[]>
+            {
+                new string[] { "Coach Number", schedule.CoachNumber },
+                new string[] { "Route", route },
+                new string[] { "Departure", schedule.DepartureDateTime },
+                new string[] { "Ticket Price", price },
+                new string[] { "Assigned Bus", busInfo }
+            };
+
+            ConsoleHelper.DisplayTable(header, rows);
+            
+            seatLayoutHelper.PrintSeatLayout(schedule.AssignedBus.TotalCapacity, schedule.BookedSeats, schedule.ReservedSeats);
+        }
     }
 
-    static void BookingTicket()
+    static void BookingTicket() //todo: fix presentation
     {
-        Console.Write("\nEnter User ID: ");
-        string userId = Console.ReadLine() ?? ""; //validate later
+        string userId;
+        while (true)
+        {
+            ConsoleHelper.Prompt("Enter User ID");
+            userId = Console.ReadLine() ?? "";
+            if(userManager.IsValidUserId(userId)) break;
+            ConsoleHelper.ErrorMessage("Invalid User ID");
+        }
 
-        ShowAllSchedule(); //todo: show based on departure and arrival city
+        ShowAllSchedule();
 
-        Console.Write("\nSelected Schedule ID: ");
-        string scheduleId = Console.ReadLine() ?? ""; //validate later also take the idx as input, like selecting city in schedule creation
+        Schedule? selectedSchedule;
+        string scheduleId;
+        while(true){
+            ConsoleHelper.Prompt("Selected Schedule ID");
+            scheduleId = Console.ReadLine() ?? ""; 
 
-        Schedule? selectedSchedule = scheduleManager.GetScheduleDetails(scheduleId);
+            selectedSchedule = scheduleManager.GetScheduleDetails(scheduleId);
+            if(selectedSchedule != null) break;
+            ConsoleHelper.ErrorMessage("Invalid Schedule ID");
+        }
 
-        seatLayoutHelper.PrintSeatLayout(selectedSchedule.AssignedBus.TotalCapacity,        selectedSchedule.ReservedSeats);
+        seatLayoutHelper.PrintSeatLayout(selectedSchedule.AssignedBus.TotalCapacity, selectedSchedule.BookedSeats, selectedSchedule.ReservedSeats);
 
-        Console.Write("\nSelected Seat: ");
-        string selectedSeat = Console.ReadLine() ?? ""; //validate later
+        string selectedSeat;
+        while (true)
+        {
+            ConsoleHelper.Prompt("Selected Seat");
+            selectedSeat = Console.ReadLine() ?? "";
+
+            if(ValidationHelper.IsValidSeat(selectedSeat, selectedSchedule.AssignedBus.TotalCapacity))
+            {
+                if(!selectedSchedule.BookedSeats.Contains(selectedSeat) && !selectedSchedule.ReservedSeats.Contains(selectedSeat))
+                {
+                    break;
+                }
+                else
+                {
+                    ConsoleHelper.ErrorMessage("Selected Seat is not Available");
+                    continue;
+                }
+            }
+            ConsoleHelper.ErrorMessage("Selected Seat is Invalid");            
+        }
 
         Invoice newInvoice = new Invoice
         {
             UserId = userId,
-            ScheduleId = scheduleId,
+            ScheduleId = selectedSchedule.ScheduleId,
             SelectedSeat = selectedSeat
         };
 
-        //a seat can be booked multiple time now, will fix it
+        selectedSchedule.BookedSeats.Add(selectedSeat);
         bookingManager.BookATicket(newInvoice);
+        ConsoleHelper.SuccessMessage("Ticket Booked Successfully");
+        //show ticket details and complete payment
     }
 
-    static void ShowUserInvoices()
+    static void ShowUserInvoices()  //todo: fix presentation
     {
-        Console.Write("\nEnter User ID: ");
-        string userId = Console.ReadLine() ?? ""; //validate later
+        ConsoleHelper.DisplayTitle("User Invoices");
+        
+        ConsoleHelper.Prompt("Enter User ID");
+        string userId = Console.ReadLine() ?? "";
 
-        List<Invoice> userInvoices = new List<Invoice>();
-        userInvoices = bookingManager.UserInvoice(userId);
+        List<Invoice> userInvoices = bookingManager.UserInvoice(userId);
 
-        foreach (Invoice invoice in userInvoices)
+        if (userInvoices.Count == 0)
         {
-            Console.WriteLine($"Invoice ID: {invoice.InvoiceId}"); //format output later
+            ConsoleHelper.CautionMessage($"No invoices found for User ID: {userId}");
+        }
+        else
+        {
+            //todo: show something beautiful
+            string[] header = { "SL No.", "Invoice ID", "Schedule ID", "Selected Seat", "Payment Status" };
+
+            List<string[]> rows = new List<string[]>();
+            for (int i = 0; i < userInvoices.Count; i++)
+            {
+                Invoice invoice = userInvoices[i];
+                string paymentText = invoice.PaymentStatus ? "Paid" : "Pending";
+
+                rows.Add(new string[]
+                {
+                    (i + 1).ToString(),
+                    invoice.InvoiceId,
+                    invoice.ScheduleId,
+                    invoice.SelectedSeat,
+                    paymentText
+                });
+            }
+            ConsoleHelper.DisplayTable(header, rows);
         }
     }
 
     static void PayInvoice()
     {
-        Console.Write("\nEnter Invoice ID: ");
-        string invoiceId = Console.ReadLine() ?? ""; //validate later
+        ConsoleHelper.DisplayTitle("Invoice Payment Processing");
 
-        bookingManager.ConfirmPayment(invoiceId);
+        string invoiceId;
+        while (true)
+        {
+            ConsoleHelper.Prompt("Enter Invoice ID");
+            invoiceId = Console.ReadLine() ?? "";
+            if(bookingManager.IsValidInvoiceId(invoiceId)) break;
+            ConsoleHelper.ErrorMessage("Invalid Invoice ID");            
+        }
+
+        bool success = false;
+        string paymentConfirmation;
+        while (true)
+        {
+            ConsoleHelper.Prompt("Do you confirm payment:\n     1. YES\n     2. NO\nConfirm Payment(1 or 2)");
+            paymentConfirmation = Console.ReadLine() ?? "";
+            
+            if(paymentConfirmation == "1")
+            {   
+                bookingManager.ConfirmPayment(invoiceId);
+                success = true;
+                break;
+            }
+            else if(paymentConfirmation == "2") break;
+            else
+            {
+                ConsoleHelper.ErrorMessage("Invalid Selection");
+                continue;
+            }
+        }
+        if (success) ConsoleHelper.SuccessMessage("Payment Confirmed");
+        else ConsoleHelper.ErrorMessage("Payment Failed");
     }
 
     static void ShowUserTickets()
     {
-        Console.Write("\nEnter User ID: ");
-        string userId = Console.ReadLine() ?? ""; //validate later
+        ConsoleHelper.DisplayTitle("User Issued Tickets");
 
-        List<Invoice> userPaidInvoices = new List<Invoice>();
-        userPaidInvoices = bookingManager.UserPaidInvoice(userId);
+        ConsoleHelper.Prompt("Enter User ID");
+        string userId = Console.ReadLine() ?? "";
 
-        foreach (Invoice invoice in userPaidInvoices)
+        List<Invoice> userPaidInvoices = bookingManager.UserPaidInvoice(userId);
+
+        if (userPaidInvoices.Count == 0)
         {
-            Console.WriteLine($"Invoice ID: {invoice.InvoiceId}"); //format output later
+            ConsoleHelper.CautionMessage($"No confirmed tickets found for User ID: {userId}");
+        }
+        else
+        {
+            string[] header = { "SL No.", "Invoice ID", "Schedule ID", "Seat Number", "Status" };
+
+            List<string[]> rows = new List<string[]>();
+            for (int i = 0; i < userPaidInvoices.Count; i++)
+            {
+                Invoice invoice = userPaidInvoices[i];
+
+                rows.Add(new string[]
+                {
+                    (i + 1).ToString(),
+                    invoice.InvoiceId,
+                    invoice.ScheduleId,
+                    invoice.SelectedSeat,
+                    "Issued / Paid"
+                });
+            }
+            ConsoleHelper.DisplayTable(header, rows);
         }
     }
-
     static void WaitForInput()
     {
         Console.WriteLine("Press any key to continue...");
