@@ -7,7 +7,6 @@ namespace bus_ticketing_console;
 
 class Program
 {
-    static ConsoleHelper    consoleHelper    = new ConsoleHelper();
     static SeatLayoutHelper seatLayoutHelper = new SeatLayoutHelper();
     static IUserManager     userManager      = new UserService();
     static IBusManager      busManager       = new BusService();
@@ -18,10 +17,9 @@ class Program
     {
         while (true)
         {
-            consoleHelper.PromptUser();
+            ConsoleHelper.DisplayMainMenu();
 
             string? input = Console.ReadLine();
-            List<string> dummy = new List<string>();
             
             switch (input)
             {
@@ -75,14 +73,37 @@ class Program
 
     static void CreateNewUser()
     {
-        Console.Write("» Enter User Name      : ");
-        string name = Console.ReadLine() ?? "";
+        ConsoleHelper.DisplayTitle("Creating New User");
+        
+        string name;
+        while (true)
+        {
+            ConsoleHelper.Prompt("Enter User Name");
+            name = Console.ReadLine() ?? "";
+            Console.ResetColor();
 
-        Console.Write("» Enter Mobile Number  : ");
-        string mobile = Console.ReadLine() ?? "";
+            if (ValidationHelper.IsValidName(name)) break;
+        }
 
-        Console.Write("» Enter Email Address  : ");
-        string email = Console.ReadLine() ?? "";
+        string mobile;
+        while (true)
+        {
+            ConsoleHelper.Prompt("Enter Mobile Number");
+            mobile = Console.ReadLine() ?? "";
+            Console.ResetColor();
+
+            if (ValidationHelper.IsValidMobileNumber(mobile)) break;
+        }
+
+        string email;
+        while (true)
+        {
+            ConsoleHelper.Prompt("Enter Email Address");
+            email = Console.ReadLine() ?? "";
+            Console.ResetColor();
+
+            if (ValidationHelper.IsValidEmail(email)) break;
+        }
 
         User NewUser = new User
         {
@@ -93,26 +114,43 @@ class Program
 
         userManager.CreateUser(NewUser);
 
-        Console.WriteLine("User Created Successfully!");
+        ConsoleHelper.SuccessMessage("User Created Successfully");        
         WaitForInput();
     }
     static void ShowAllUser()
     {
+        ConsoleHelper.DisplayTitle("User List");
         List<User> AllUser = userManager.ShowUsers();
-        foreach (User user in AllUser)
-        {
-            Console.WriteLine($"ID -> {user.UserId}, Name -> {user.UserName}");
+
+        if(AllUser.Count == 0) ConsoleHelper.CautionMessage("No User registered in the system yet");
+        else{
+            string[] header = {"SL No.", "User ID", "Name", "Mobile Number", "Email Address"};
+
+            List<string[]> rows = new List<string[]>();
+            for(int i=0; i<AllUser.Count; i++)
+            {
+                rows.Add(new string[]
+                {
+                    (i+1).ToString(),
+                    AllUser[i].UserId,
+                    AllUser[i].UserName,
+                    AllUser[i].MobileNumber,
+                    AllUser[i].Email
+                });
+            }
+            ConsoleHelper.DisplayTable(header, rows);
         }
         WaitForInput();
     }
 
-    static void CreateNewBus()
-    {
-        Console.WriteLine("\n» Bus Model:");
-        Console.WriteLine("  1. Scania Multi-Axle      2. Hino 1J");
-        Console.WriteLine("  3. Hyundai Universe       4. Volvo B11R");
-        Console.WriteLine("  5. Ashok Leyland          6. Isuzu Turkuaz");
-        Console.Write("Select Bus Model: ");
+    static void CreateNewBus()          //todo: some index validation, final confirmation
+    {   
+        ConsoleHelper.DisplayTitle("Adding New Bus");
+
+        string[] header = { "SL No.", "Bus Models" };
+        ConsoleHelper.DisplayTable(header, SystemRegistry.BusModelsList());
+        ConsoleHelper.Prompt("Select Bus Model");
+
         string modelChoice = Console.ReadLine() ?? "";
         string modelName = modelChoice switch
         {
@@ -122,12 +160,17 @@ class Program
             "4" => "Volvo B11R",
             "5" => "Ashok Leyland",
             "6" => "Isuzu Turkuaz",
+            "7" => "Mercedes-Benz SHD",
+            "8" => "MAN Lion's Coach",
+            "9" => "Toyota Coaster",
+            "10" => "Mitsubishi Fuso",
             _ => "Standard Fleet Bus" 
         };
 
-        Console.WriteLine("\n» Bus Classification:");
-        Console.WriteLine("  1. Business Class         2. Economy Class");
-        Console.Write("Select Bus Classification: ");
+        header[1] = "Bus Classifications";
+        ConsoleHelper.DisplayTable(header, SystemRegistry.BusClassList());
+        ConsoleHelper.Prompt("Select Bus Classification");
+
         string classChoice = Console.ReadLine() ?? "";
         string classification = classChoice switch
         {
@@ -138,12 +181,11 @@ class Program
 
         int totalCapacity = 40; 
 
-        if(classification == "Business"){
-            Console.WriteLine("\n» Seating Capacity:");
-            Console.WriteLine("  1. 28 Seats [Ultra Luxury]");
-            Console.WriteLine("  2. 30 Seats [Executive]");
-            Console.WriteLine("  3. 32 Seats [Standard]");
-            Console.Write("Select Seating Capacity: ");
+        if (classification == "Business")
+        {
+            header[1] = "Seating Capacity";
+            ConsoleHelper.DisplayTable(header, SystemRegistry.CapacityList(true));
+            ConsoleHelper.Prompt("Select Seating Capacity");
             string capacityChoice = Console.ReadLine() ?? "";
             
             totalCapacity = capacityChoice switch
@@ -154,12 +196,11 @@ class Program
                 _ => 30 
             };
         }
-        else{
-            Console.WriteLine("\n» Seating Capacity:");
-            Console.WriteLine("  1. 36 Seats [Spacious]");
-            Console.WriteLine("  2. 40 Seats [Standard Comfort]");
-            Console.WriteLine("  3. 45 Seats [High Capacity]");
-            Console.Write("Select Seating Capacity: ");
+        else
+        {
+            header[1] = "Seating Capacity";
+            ConsoleHelper.DisplayTable(header, SystemRegistry.CapacityList(false));
+            ConsoleHelper.Prompt("Select Seating Capacity");
             string capacityChoice = Console.ReadLine() ?? "";
             
             totalCapacity = capacityChoice switch
@@ -171,9 +212,9 @@ class Program
             };
         }
 
-        Console.WriteLine("\n» Is this an Air-Conditioned (AC) Bus?");
-        Console.WriteLine("  1. Yes [AC]             2. No [Non-AC]");
-        Console.Write("Selected Status: ");
+        header[1] = "Air-Conditioned (AC) Status";
+        ConsoleHelper.DisplayTable(header, SystemRegistry.AcOptionsList());
+        ConsoleHelper.Prompt("Selected Status");
         string acChoice = Console.ReadLine() ?? "";
         bool isAirConditioned = acChoice == "1";
 
@@ -186,168 +227,164 @@ class Program
         };
 
         busManager.CreateBus(NewBus);
-
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("\nBus Registered Successfully!");
-        Console.ResetColor();
+        ConsoleHelper.SuccessMessage("Bus Registered Successfully");
         WaitForInput();
     }
 
     static void ShowAllBus()
     {
+        ConsoleHelper.DisplayTitle("Bus Fleet List");
         List<Bus> AllBuses = busManager.ShowBuses();
-        
-        if(AllBuses.Count == 0){
-            Console.WriteLine("No buses registered in the system yet.");
-        }
-        else{
-            foreach (Bus bus in AllBuses)
-            {
-                string acStatus = bus.IsAirConditioned ? "AC" : "Non-AC";
-                string availability = bus.IsAvailable ? "Available" : "On Trip / Not Fit";
 
-                Console.WriteLine($"ID -> {bus.BusId} | {bus.ModelName} ({bus.Classification} - {acStatus}) | Seats: {bus.TotalCapacity} | Status: {availability}");
+        if (AllBuses.Count == 0)
+        {
+            ConsoleHelper.CautionMessage("No buses registered in the system yet");
+        }
+        else
+        {
+            string[] header = { "SL No.", "Bus ID", "Model Name", "Classification", "Type", "Seats", "Status" };
+
+            List<string[]> rows = new List<string[]>();
+            for (int i = 0; i < AllBuses.Count; i++)
+            {
+                string acStatus = AllBuses[i].IsAirConditioned ? "AC" : "Non-AC";
+                string availability = AllBuses[i].IsAvailable ? "Available" : "Not Available";
+
+                rows.Add(new string[]
+                {
+                    (i + 1).ToString(),
+                    AllBuses[i].BusId,
+                    AllBuses[i].ModelName,
+                    AllBuses[i].Classification,
+                    acStatus,
+                    AllBuses[i].TotalCapacity.ToString(),
+                    availability
+                });
             }
+            ConsoleHelper.DisplayTable(header, rows);
         }
         WaitForInput();
     }
 
-    static void CreateNewSchedule()
+    static void CreateNewSchedule() //todo: final confirmation, some validation, book bus, (now a bus can be booked multiple times)
     {
+        ConsoleHelper.DisplayTitle("Creating New Schedule");
+        
         List<Bus> availableBuses = busManager.ShowAvailableBuses();
-        if(availableBuses.Count == 0)
+        if (availableBuses.Count == 0)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("\nNo buses available!");
-            Console.ResetColor();
+            ConsoleHelper.CautionMessage("No buses available");
             WaitForInput();
             return;
         }
-        Console.WriteLine("\n» Available Buses for this Schedule:");
-        for(int i=0; i<availableBuses.Count; i++)
+
+        string[] busHeader = { "SL No.", "Model Name", "Classification", "Type", "Seats" };
+        List<string[]> busRows = new List<string[]>();
+        for (int i = 0; i < availableBuses.Count; i++)
         {
-            Bus bus = availableBuses[i];
-            string ACStatus;
-            if(bus.IsAirConditioned) ACStatus = "AC";
-            else ACStatus = "Non-AC";
-
-            Console.WriteLine($"{i+1} | Model: {bus.ModelName} | Class: {bus.Classification} | Capacity: {bus.TotalCapacity} | {ACStatus}");
+            busRows.Add(new string[]
+            {
+                (i + 1).ToString(),
+                availableBuses[i].ModelName,
+                availableBuses[i].Classification,
+                availableBuses[i].IsAirConditioned ? "AC" : "Non-AC",
+                availableBuses[i].TotalCapacity.ToString()
+            });
         }
-
+        ConsoleHelper.DisplayTable(busHeader, busRows);
+        
         int busIndex;
         while (true)
         {
-            Console.WriteLine($"Selected Bus(1-{availableBuses.Count}): ");
-
-            if(int.TryParse(Console.ReadLine(), out int idx) && idx >= 1 && idx <= availableBuses.Count)
+            ConsoleHelper.Prompt($"Select Bus (1-{availableBuses.Count})");
+            if (int.TryParse(Console.ReadLine(), out int idx) && idx >= 1 && idx <= availableBuses.Count)
             {
                 busIndex = idx - 1;
                 break;
             }
-            Console.WriteLine($"Invalid Selection!"); //no escape option, either complete or stuck in infinite loop. will fix it.
+            ConsoleHelper.ErrorMessage("Invalid Selection");
         }
-
         Bus selectedBus = availableBuses[busIndex];
 
-        string[] cities = { 
-            "Dhaka", 
-            "Chattogram", 
-            "Cox's Bazar", 
-            "Sylhet", 
-            "Rajshahi", 
-            "Khulna", 
-            "Barishal", 
-            "Rangpur", 
-            "Mymensingh", 
-            "Cumilla", 
-            "Bogura", 
-            "Jashore" 
-        };
-
+        string[] cityHeader = { "SL No.", "Departure Cities" };
+        ConsoleHelper.DisplayTable(cityHeader, SystemRegistry.CitiesList());
+        
         int departureCityIdx;
+        while (true)
+        {
+            ConsoleHelper.Prompt("Select Departure City");
+            if (int.TryParse(Console.ReadLine(), out int depIdx) && depIdx >= 1 && depIdx <= SystemRegistry.Cities.Length)
+            {
+                departureCityIdx = depIdx - 1;
+                break;
+            }
+            ConsoleHelper.ErrorMessage("Invalid city selection");
+        }
+
+        cityHeader[1] = "Arrival Cities";
+        ConsoleHelper.DisplayTable(cityHeader, SystemRegistry.CitiesList());
+        
         int arrivalCityIdx;
-
         while (true)
         {
-            Console.WriteLine("\n» Departure City:");
-            for(int i=0; i<cities.Length; i++)
+            ConsoleHelper.Prompt("Select Arrival City");
+            if (int.TryParse(Console.ReadLine(), out int arvIdx) && arvIdx >= 1 && arvIdx <= SystemRegistry.Cities.Length)
             {
-                Console.WriteLine($"{i+1}: {cities[i]}");
-            }
-            Console.WriteLine("\n» Selected Departure City:");
-            if(int.TryParse(Console.ReadLine(), out int depIdx) && depIdx >= 1 && depIdx <= cities.Length){
-                departureCityIdx = depIdx-1;
-                break;
-            }
-            Console.WriteLine("Invalid city selection!");
-        }
-
-        while (true)
-        {
-            Console.WriteLine("\n» Arrival City:");
-            int counter = 1;
-            for(int i=0; i<cities.Length; i++)
-            {
-                if(i != departureCityIdx){
-                    Console.WriteLine($"{counter}: {cities[i]}");
-                    counter++;
+                if(arvIdx - 1 == departureCityIdx)
+                {
+                    ConsoleHelper.ErrorMessage("Selected same Departure City and Arrival City");
+                    continue;
                 }
-            }
-            Console.WriteLine("\n» Selected Arrival City:");
-            if(int.TryParse(Console.ReadLine(), out int arvIdx) && arvIdx >= 1 && arvIdx < cities.Length){
-                if(arvIdx-1 >= departureCityIdx) arvIdx++;
-                arrivalCityIdx = arvIdx-1;
+                arrivalCityIdx = arvIdx - 1;
                 break;
             }
-            Console.WriteLine("Invalid city selection!");
+            ConsoleHelper.ErrorMessage("Invalid city selection");
         }
 
-        Console.WriteLine("\n» Enter Schedule Date and Time Details:");
         int day, month, hour, minute;
-
         while (true)
         {
-            Console.Write("  Enter Month (1-12): ");
+            ConsoleHelper.Prompt("Enter Month (1-12)");
             if (int.TryParse(Console.ReadLine(), out month) && month >= 1 && month <= 12) break;
-            Console.WriteLine("  Invalid month!");
+            ConsoleHelper.ErrorMessage("Invalid month!");
         }
 
         while (true)
         {
-            Console.Write("  Enter Day (1-31): ");
-            if (int.TryParse(Console.ReadLine(), out day) && day >= 1 && day <= 31) break; // February 31 can be selected, lol, will fix later
-            Console.WriteLine("  Invalid day!");
+            ConsoleHelper.Prompt("Enter Day (1-31)");
+            if (int.TryParse(Console.ReadLine(), out day) && day >= 1 && day <= 31) break;
+            ConsoleHelper.ErrorMessage("Invalid day");
         }
 
         while (true)
         {
-            Console.Write("  Enter Hour (0-23, 24-Hour Format): ");
+            ConsoleHelper.Prompt("Enter Hour (0-23)");
             if (int.TryParse(Console.ReadLine(), out hour) && hour >= 0 && hour <= 23) break;
-            Console.WriteLine("  Invalid hour!");
+            ConsoleHelper.ErrorMessage("Invalid hour");
         }
 
         while (true)
         {
-            Console.Write("  Enter Minute (0-59): ");
+            ConsoleHelper.Prompt("Enter Minute (0-59)");
             if (int.TryParse(Console.ReadLine(), out minute) && minute >= 0 && minute <= 59) break;
-            Console.WriteLine("  Invalid minute!");
+            ConsoleHelper.ErrorMessage("Invalid minute");
         }
 
-        string formattedDateTime = $"2026-{month:D2}-{day:D2} {hour:D2}:{minute:D2}"; //only 2026? scheduling in past is possible? fix later
+        string formattedDateTime = $"2026-{month:D2}-{day:D2} {hour:D2}:{minute:D2}";
 
         double confirmedPrice = 0;
         while (true)
         {
-            Console.Write("\n» Enter Ticket Price (BDT): ");
+            ConsoleHelper.Prompt("Enter Ticket Price (BDT)");
             string firstInput = Console.ReadLine() ?? "";
             
             if (!double.TryParse(firstInput, out double firstPrice) || firstPrice <= 0)
             {
-                Console.WriteLine("Price must be a valid number greater than 0.");
+                ConsoleHelper.ErrorMessage("Price must be a valid number greater than 0.");
                 continue;
             }
 
-            Console.Write("» Re-enter Ticket Price to Confirm: ");
+            ConsoleHelper.Prompt("Re-enter Ticket Price");
             string secondInput = Console.ReadLine() ?? "";
             
             if (double.TryParse(secondInput, out double secondPrice) && firstPrice == secondPrice)
@@ -355,40 +392,54 @@ class Program
                 confirmedPrice = firstPrice;
                 break;
             }
-
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Error: Prices do not match or input was invalid! Try again.");
-            Console.ResetColor();
+            ConsoleHelper.ErrorMessage("Prices do not match or input was invalid! Try again");
         }
 
         Schedule newSchedule = new Schedule
         {
-            DepartureCity     = cities[departureCityIdx],
-            ArrivalCity       = cities[arrivalCityIdx],
+            DepartureCity     = SystemRegistry.Cities[departureCityIdx],
+            ArrivalCity       = SystemRegistry.Cities[arrivalCityIdx],
             DepartureDateTime = formattedDateTime,
             TicketPrice       = confirmedPrice,
             AssignedBus       = selectedBus
         };
 
         scheduleManager.CreateSchedule(newSchedule);
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"\n Schedule Created Successfully!\n From: {cities[departureCityIdx]}\n To: {cities[arrivalCityIdx]}\n Time: {formattedDateTime}");
-        Console.ResetColor();
+        ConsoleHelper.SuccessMessage($"Schedule Created Successfully");
         WaitForInput();
     }
 
     static void ShowAllSchedule()
     {
+        ConsoleHelper.DisplayTitle("Active Bus Schedules");
         List<Schedule> AllSchedules = scheduleManager.ShowSchedule();
-        
-        if(AllSchedules.Count == 0){
-            Console.WriteLine("No schedules registered in the system yet.");
+
+        if (AllSchedules.Count == 0)
+        {
+            ConsoleHelper.CautionMessage("No schedules registered in the system yet");
         }
-        else{
-            foreach (Schedule schedule in AllSchedules)
+        else
+        {
+            string[] header = { "SL No.", "Schedule ID", "Route (From - To)", "Departure Date & Time", "Fare (BDT)", "Available Seats" };
+
+            List<string[]> rows = new List<string[]>();
+            for (int i = 0; i < AllSchedules.Count; i++)
             {
-                Console.WriteLine($"ID -> {schedule.ScheduleId} | {schedule.DepartureCity} - {schedule.ArrivalCity} | {schedule.DepartureDateTime} | {schedule.TicketPrice} BDT | {schedule.AssignedBus.TotalCapacity - schedule.ReservedSeats.Count} Seats Available");
+                Schedule schedule = AllSchedules[i];
+                int availableSeatsCount = schedule.AssignedBus.TotalCapacity - schedule.ReservedSeats.Count;
+                string route = $"{schedule.DepartureCity} ➔ {schedule.ArrivalCity}";
+
+                rows.Add(new string[]
+                {
+                    (i + 1).ToString(),
+                    schedule.ScheduleId,
+                    route,
+                    schedule.DepartureDateTime,
+                    schedule.TicketPrice.ToString("F2"),
+                    $"{availableSeatsCount} / {schedule.AssignedBus.TotalCapacity}"
+                });
             }
+            ConsoleHelper.DisplayTable(header, rows);
         }
         WaitForInput();
     }
