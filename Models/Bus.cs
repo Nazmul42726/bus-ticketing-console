@@ -1,3 +1,5 @@
+using bus_ticketing_console.Interfaces;
+
 namespace bus_ticketing_console.Models;
 
 public class Bus
@@ -8,4 +10,10 @@ public class Bus
     public required int TotalCapacity { get; set; }
     public required bool IsAirConditioned { get; set; }
     public bool IsAvailable { get; set; } = true;
+
+    public required ISeatLayoutStrategy LayoutStrategy {get; set;}
+    public void ShowSeatLayout(IReadOnlyList<string> reservedSeats, IReadOnlyList<string> bookedSeats)
+    {
+        LayoutStrategy.PrintLayout(reservedSeats, bookedSeats);
+    }
 }
