@@ -1,4 +1,5 @@
 using bus_ticketing_console.Interfaces;
+using bus_ticketing_console.Models;
 
 namespace bus_ticketing_console.Strategies;
 
@@ -76,4 +77,7 @@ public class SeatLayout32 : ISeatLayoutStrategy
         Console.WriteLine("      ║   [ REAR / BACK ]   ║");
         Console.WriteLine("      ╚═════════════════════╝");
     }
+
+    public bool IsValidSeat(string seat)=> SystemRegistry.Seats32.Contains(seat);
+
 }

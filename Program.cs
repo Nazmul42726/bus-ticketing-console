@@ -83,75 +83,76 @@ class Program
         }
     }
 
-    static void CreateNewUser()
-    {
-        ConsoleHelper.DisplayTitle("Creating New User");
+    // static void CreateNewUser()
+    // {
+    //     ConsoleHelper.DisplayTitle("Creating New User");
         
-        string name;
-        while (true)
-        {
-            ConsoleHelper.Prompt("Enter User Name");
-            name = Console.ReadLine() ?? "";
-            Console.ResetColor();
+    //     string name;
+    //     while (true)
+    //     {
+    //         ConsoleHelper.Prompt("Enter User Name");
+    //         name = Console.ReadLine() ?? "";
+    //         Console.ResetColor();
 
-            if (ValidationHelper.IsValidName(name)) break;
-        }
+    //         if (ValidationHelper.IsValidName(name)) break;
+    //     }
 
-        string mobile;
-        while (true)
-        {
-            ConsoleHelper.Prompt("Enter Mobile Number");
-            mobile = Console.ReadLine() ?? "";
-            Console.ResetColor();
+    //     string mobile;
+    //     while (true)
+    //     {
+    //         ConsoleHelper.Prompt("Enter Mobile Number");
+    //         mobile = Console.ReadLine() ?? "";
+    //         Console.ResetColor();
 
-            if (ValidationHelper.IsValidMobileNumber(mobile)) break;
-        }
+    //         if (ValidationHelper.IsValidMobileNumber(mobile)) break;
+    //     }
 
-        string email;
-        while (true)
-        {
-            ConsoleHelper.Prompt("Enter Email Address");
-            email = Console.ReadLine() ?? "";
-            Console.ResetColor();
+    //     string email;
+    //     while (true)
+    //     {
+    //         ConsoleHelper.Prompt("Enter Email Address");
+    //         email = Console.ReadLine() ?? "";
+    //         Console.ResetColor();
 
-            if (ValidationHelper.IsValidEmail(email)) break;
-        }
+    //         if (ValidationHelper.IsValidEmail(email)) break;
+    //     }
 
-        User NewUser = new User
-        {
-            UserName = name,
-            MobileNumber = mobile,
-            Email = email
-        };
+    //     User NewUser = new User
+    //     {
+    //         UserName = name,
+    //         MobileNumber = mobile,
+    //         Email = email
+    //     };
 
-        userManager.CreateUser(NewUser);
+    //     userManager.CreateUser(NewUser);
 
-        ConsoleHelper.SuccessMessage("User Created Successfully");        
-    }
-    static void ShowAllUser()
-    {
-        ConsoleHelper.DisplayTitle("User List");
-        List<User> AllUser = userManager.ShowUsers();
+    //     ConsoleHelper.SuccessMessage("User Created Successfully");        
+    // }
 
-        if(AllUser.Count == 0) ConsoleHelper.CautionMessage("No User registered in the system yet");
-        else{
-            string[] header = {"SL No.", "User ID", "Name", "Mobile Number", "Email Address"};
+    // static void ShowAllUser()
+    // {
+    //     ConsoleHelper.DisplayTitle("User List");
+    //     List<User> AllUser = userManager.ShowUsers();
 
-            List<string[]> rows = new List<string[]>();
-            for(int i=0; i<AllUser.Count; i++)
-            {
-                rows.Add(new string[]
-                {
-                    (i+1).ToString(),
-                    AllUser[i].UserId,
-                    AllUser[i].UserName,
-                    AllUser[i].MobileNumber,
-                    AllUser[i].Email
-                });
-            }
-            ConsoleHelper.DisplayTable(header, rows);
-        }
-    }
+    //     if(AllUser.Count == 0) ConsoleHelper.CautionMessage("No User registered in the system yet");
+    //     else{
+    //         string[] header = {"SL No.", "User ID", "Name", "Mobile Number", "Email Address"};
+
+    //         List<string[]> rows = new List<string[]>();
+    //         for(int i=0; i<AllUser.Count; i++)
+    //         {
+    //             rows.Add(new string[]
+    //             {
+    //                 (i+1).ToString(),
+    //                 AllUser[i].UserId,
+    //                 AllUser[i].UserName,
+    //                 AllUser[i].MobileNumber,
+    //                 AllUser[i].Email
+    //             });
+    //         }
+    //         ConsoleHelper.DisplayTable(header, rows);
+    //     }
+    // }
 
     // static void CreateNewBus()          //todo: some index validation, final confirmation
     // {   
@@ -240,39 +241,39 @@ class Program
     //     ConsoleHelper.SuccessMessage("Bus Registered Successfully");
     // }
 
-    static void ShowAllBus()
-    {
-        ConsoleHelper.DisplayTitle("Bus Fleet List");
-        List<Bus> AllBuses = busManager.ShowBuses();
+    // static void ShowAllBus()
+    // {
+    //     ConsoleHelper.DisplayTitle("Bus Fleet List");
+    //     List<Bus> AllBuses = busManager.ShowBuses();
 
-        if (AllBuses.Count == 0)
-        {
-            ConsoleHelper.CautionMessage("No buses registered in the system yet");
-        }
-        else
-        {
-            string[] header = { "SL No.", "Bus ID", "Model Name", "Classification", "Type", "Seats", "Status" };
+    //     if (AllBuses.Count == 0)
+    //     {
+    //         ConsoleHelper.CautionMessage("No buses registered in the system yet");
+    //     }
+    //     else
+    //     {
+    //         string[] header = { "SL No.", "Bus ID", "Model Name", "Classification", "Type", "Seats", "Status" };
 
-            List<string[]> rows = new List<string[]>();
-            for (int i = 0; i < AllBuses.Count; i++)
-            {
-                string acStatus = AllBuses[i].IsAirConditioned ? "AC" : "Non-AC";
-                string availability = AllBuses[i].IsAvailable ? "Available" : "Not Available";
+    //         List<string[]> rows = new List<string[]>();
+    //         for (int i = 0; i < AllBuses.Count; i++)
+    //         {
+    //             string acStatus = AllBuses[i].IsAirConditioned ? "AC" : "Non-AC";
+    //             string availability = AllBuses[i].IsAvailable ? "Available" : "Not Available";
 
-                rows.Add(new string[]
-                {
-                    (i + 1).ToString(),
-                    AllBuses[i].BusId,
-                    AllBuses[i].ModelName,
-                    AllBuses[i].Classification,
-                    acStatus,
-                    AllBuses[i].TotalCapacity.ToString(),
-                    availability
-                });
-            }
-            ConsoleHelper.DisplayTable(header, rows);
-        }
-    }
+    //             rows.Add(new string[]
+    //             {
+    //                 (i + 1).ToString(),
+    //                 AllBuses[i].BusId,
+    //                 AllBuses[i].ModelName,
+    //                 AllBuses[i].Classification,
+    //                 acStatus,
+    //                 AllBuses[i].TotalCapacity.ToString(),
+    //                 availability
+    //             });
+    //         }
+    //         ConsoleHelper.DisplayTable(header, rows);
+    //     }
+    // }
 
     // static void CreateNewSchedule() //todo: final confirmation, some validation, book bus, (now a bus can be booked multiple times)
     // {
@@ -544,114 +545,115 @@ class Program
     //     //show ticket details and complete payment
     // }
 
-    static void ShowUserInvoices()  //todo: fix presentation
-    {
-        ConsoleHelper.DisplayTitle("User Invoices");
+    // static void ShowUserInvoices()  //todo: fix presentation
+    // {
+    //     ConsoleHelper.DisplayTitle("User Invoices");
         
-        ConsoleHelper.Prompt("Enter User ID");
-        string userId = Console.ReadLine() ?? "";
+    //     ConsoleHelper.Prompt("Enter User ID");
+    //     string userId = Console.ReadLine() ?? "";
 
-        List<Invoice> userInvoices = bookingManager.UserInvoice(userId);
+    //     List<Invoice> userInvoices = bookingManager.UserInvoice(userId);
 
-        if (userInvoices.Count == 0)
-        {
-            ConsoleHelper.CautionMessage($"No invoices found for User ID: {userId}");
-        }
-        else
-        {
-            //todo: show something beautiful
-            string[] header = { "SL No.", "Invoice ID", "Schedule ID", "Selected Seat", "Payment Status" };
+    //     if (userInvoices.Count == 0)
+    //     {
+    //         ConsoleHelper.CautionMessage($"No invoices found for User ID: {userId}");
+    //     }
+    //     else
+    //     {
+    //         //todo: show something beautiful
+    //         string[] header = { "SL No.", "Invoice ID", "Schedule ID", "Selected Seat", "Payment Status" };
 
-            List<string[]> rows = new List<string[]>();
-            for (int i = 0; i < userInvoices.Count; i++)
-            {
-                Invoice invoice = userInvoices[i];
-                string paymentText = invoice.PaymentStatus ? "Paid" : "Pending";
+    //         List<string[]> rows = new List<string[]>();
+    //         for (int i = 0; i < userInvoices.Count; i++)
+    //         {
+    //             Invoice invoice = userInvoices[i];
+    //             string paymentText = invoice.PaymentStatus ? "Paid" : "Pending";
 
-                rows.Add(new string[]
-                {
-                    (i + 1).ToString(),
-                    invoice.InvoiceId,
-                    invoice.ScheduleId,
-                    invoice.SelectedSeat,
-                    paymentText
-                });
-            }
-            ConsoleHelper.DisplayTable(header, rows);
-        }
-    }
+    //             rows.Add(new string[]
+    //             {
+    //                 (i + 1).ToString(),
+    //                 invoice.InvoiceId,
+    //                 invoice.ScheduleId,
+    //                 invoice.SelectedSeat,
+    //                 paymentText
+    //             });
+    //         }
+    //         ConsoleHelper.DisplayTable(header, rows);
+    //     }
+    // }
 
-    static void PayInvoice()
-    {
-        ConsoleHelper.DisplayTitle("Invoice Payment Processing");
+    // static void PayInvoice()
+    // {
+    //     ConsoleHelper.DisplayTitle("Invoice Payment Processing");
 
-        string invoiceId;
-        while (true)
-        {
-            ConsoleHelper.Prompt("Enter Invoice ID");
-            invoiceId = Console.ReadLine() ?? "";
-            if(bookingManager.IsValidInvoiceId(invoiceId)) break;
-            ConsoleHelper.ErrorMessage("Invalid Invoice ID");            
-        }
+    //     string invoiceId;
+    //     while (true)
+    //     {
+    //         ConsoleHelper.Prompt("Enter Invoice ID");
+    //         invoiceId = Console.ReadLine() ?? "";
+    //         if(bookingManager.IsValidInvoiceId(invoiceId)) break;
+    //         ConsoleHelper.ErrorMessage("Invalid Invoice ID");            
+    //     }
 
-        bool success = false;
-        string paymentConfirmation;
-        while (true)
-        {
-            ConsoleHelper.Prompt("Do you confirm payment:\n     1. YES\n     2. NO\nConfirm Payment(1 or 2)");
-            paymentConfirmation = Console.ReadLine() ?? "";
+    //     bool success = false;
+    //     string paymentConfirmation;
+    //     while (true)
+    //     {
+    //         ConsoleHelper.Prompt("Do you confirm payment:\n     1. YES\n     2. NO\nConfirm Payment(1 or 2)");
+    //         paymentConfirmation = Console.ReadLine() ?? "";
             
-            if(paymentConfirmation == "1")
-            {   
-                bookingManager.ConfirmPayment(invoiceId);
-                success = true;
-                break;
-            }
-            else if(paymentConfirmation == "2") break;
-            else
-            {
-                ConsoleHelper.ErrorMessage("Invalid Selection");
-                continue;
-            }
-        }
-        if (success) ConsoleHelper.SuccessMessage("Payment Confirmed");
-        else ConsoleHelper.ErrorMessage("Payment Failed");
-    }
+    //         if(paymentConfirmation == "1")
+    //         {   
+    //             bookingManager.ConfirmPayment(invoiceId);
+    //             success = true;
+    //             break;
+    //         }
+    //         else if(paymentConfirmation == "2") break;
+    //         else
+    //         {
+    //             ConsoleHelper.ErrorMessage("Invalid Selection");
+    //             continue;
+    //         }
+    //     }
+    //     if (success) ConsoleHelper.SuccessMessage("Payment Confirmed");
+    //     else ConsoleHelper.ErrorMessage("Payment Failed");
+    // }
 
-    static void ShowUserTickets()
-    {
-        ConsoleHelper.DisplayTitle("User Issued Tickets");
+    // static void ShowUserTickets()
+    // {
+    //     ConsoleHelper.DisplayTitle("User Issued Tickets");
 
-        ConsoleHelper.Prompt("Enter User ID");
-        string userId = Console.ReadLine() ?? "";
+    //     ConsoleHelper.Prompt("Enter User ID");
+    //     string userId = Console.ReadLine() ?? "";
 
-        List<Invoice> userPaidInvoices = bookingManager.UserPaidInvoice(userId);
+    //     List<Invoice> userPaidInvoices = bookingManager.UserPaidInvoice(userId);
 
-        if (userPaidInvoices.Count == 0)
-        {
-            ConsoleHelper.CautionMessage($"No confirmed tickets found for User ID: {userId}");
-        }
-        else
-        {
-            string[] header = { "SL No.", "Invoice ID", "Schedule ID", "Seat Number", "Status" };
+    //     if (userPaidInvoices.Count == 0)
+    //     {
+    //         ConsoleHelper.CautionMessage($"No confirmed tickets found for User ID: {userId}");
+    //     }
+    //     else
+    //     {
+    //         string[] header = { "SL No.", "Invoice ID", "Schedule ID", "Seat Number", "Status" };
 
-            List<string[]> rows = new List<string[]>();
-            for (int i = 0; i < userPaidInvoices.Count; i++)
-            {
-                Invoice invoice = userPaidInvoices[i];
+    //         List<string[]> rows = new List<string[]>();
+    //         for (int i = 0; i < userPaidInvoices.Count; i++)
+    //         {
+    //             Invoice invoice = userPaidInvoices[i];
 
-                rows.Add(new string[]
-                {
-                    (i + 1).ToString(),
-                    invoice.InvoiceId,
-                    invoice.ScheduleId,
-                    invoice.SelectedSeat,
-                    "Issued / Paid"
-                });
-            }
-            ConsoleHelper.DisplayTable(header, rows);
-        }
-    }
+    //             rows.Add(new string[]
+    //             {
+    //                 (i + 1).ToString(),
+    //                 invoice.InvoiceId,
+    //                 invoice.ScheduleId,
+    //                 invoice.SelectedSeat,
+    //                 "Issued / Paid"
+    //             });
+    //         }
+    //         ConsoleHelper.DisplayTable(header, rows);
+    //     }
+    // }
+    
     static void WaitForInput()
     {
         Console.WriteLine("Press any key to continue...");
