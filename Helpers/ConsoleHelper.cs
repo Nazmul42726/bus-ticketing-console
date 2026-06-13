@@ -222,4 +222,24 @@ public class ConsoleHelper
 
         return new string(' ', leftPadding) + text + new string(' ', rightPadding);
     }
+
+    public static List<string[]> FormatForTable(string[] rawData)
+    {
+        List<string[]> formattedData = new List<string[]>();
+        for(int i=0; i<rawData.Length; i++)
+        {
+            formattedData.Add(new string[] {(i+1).ToString(), rawData[i]});
+        }
+        return formattedData;
+    }
+
+    public static void PrintSeat(string seat, IReadOnlyList<string> bookedSeats, IReadOnlyList<string> reservedSeats)
+    {
+        if(bookedSeats.Contains(seat)) Console.ForegroundColor = ConsoleColor.Yellow;
+        else if(reservedSeats.Contains(seat)) Console.ForegroundColor = ConsoleColor.Red;
+        else Console.ForegroundColor = ConsoleColor.Green;
+
+        Console.Write($"[{seat}]".PadRight(5));
+        Console.ResetColor();
+    }
 }

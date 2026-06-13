@@ -1,3 +1,4 @@
+using bus_ticketing_console.Helpers;
 using bus_ticketing_console.Interfaces;
 using bus_ticketing_console.Models;
 
@@ -16,42 +17,20 @@ public class SeatLayout36 : ISeatLayoutStrategy
         // 9 rows of [ A B --- C D ]
         for (int row = 1; row <= 9; row++)
         {
-            Console.Write($"  {row:D2}  │ ");
-
-            // Column A
             string seatA = $"{row}A";
-            if (reservedSeats.Contains(seatA)) Console.ForegroundColor = ConsoleColor.Red;
-            else if (bookedSeats.Contains(seatA)) Console.ForegroundColor = ConsoleColor.Yellow;
-            else Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"[{seatA}]".PadRight(5));
-            Console.ResetColor();
-
-            // Column B
             string seatB = $"{row}B";
-            if (reservedSeats.Contains(seatB)) Console.ForegroundColor = ConsoleColor.Red;
-            else if (bookedSeats.Contains(seatB)) Console.ForegroundColor = ConsoleColor.Yellow;
-            else Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"[{seatB}]".PadRight(5));
-            Console.ResetColor();
+            string seatC = $"{row}C";
+            string seatD = $"{row}D";
+
+            Console.Write($"  {row:D2}  │ ");
+            ConsoleHelper.PrintSeat(seatA, bookedSeats, reservedSeats);
+            ConsoleHelper.PrintSeat(seatB, bookedSeats, reservedSeats);
 
             // Aisle
             Console.Write("   ");
 
-            // Column C
-            string seatC = $"{row}C";
-            if (reservedSeats.Contains(seatC)) Console.ForegroundColor = ConsoleColor.Red;
-            else if (bookedSeats.Contains(seatC)) Console.ForegroundColor = ConsoleColor.Yellow;
-            else Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"[{seatC}]".PadRight(5));
-            Console.ResetColor();
-
-            // Column D
-            string seatD = $"{row}D";
-            if (reservedSeats.Contains(seatD)) Console.ForegroundColor = ConsoleColor.Red;
-            else if (bookedSeats.Contains(seatD)) Console.ForegroundColor = ConsoleColor.Yellow;
-            else Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"[{seatD}]".PadRight(5));
-            Console.ResetColor();
+            ConsoleHelper.PrintSeat(seatC, bookedSeats, reservedSeats);
+            ConsoleHelper.PrintSeat(seatD, bookedSeats, reservedSeats);
 
             Console.WriteLine("│");
         }
@@ -62,5 +41,4 @@ public class SeatLayout36 : ISeatLayoutStrategy
     }
 
     public bool IsValidSeat(string seat)=> SystemRegistry.Seats36.Contains(seat);
-
 }

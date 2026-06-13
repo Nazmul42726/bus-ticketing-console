@@ -1,3 +1,4 @@
+using bus_ticketing_console.Helpers;
 using bus_ticketing_console.Interfaces;
 using bus_ticketing_console.Models;
 
@@ -16,23 +17,14 @@ public class SeatLayout45 : ISeatLayoutStrategy
         // 10 rows of [ A B --- C D ]
         for (int row = 1; row <= 11; row++)
         {
-            Console.Write($"  {row:D2}  │ ");
-
-            // Column A
             string seatA = $"{row}A";
-            if (reservedSeats.Contains(seatA)) Console.ForegroundColor = ConsoleColor.Red;
-            else if (bookedSeats.Contains(seatA)) Console.ForegroundColor = ConsoleColor.Yellow;
-            else Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"[{seatA}]".PadRight(5));
-            Console.ResetColor();
-
-            // Column B
             string seatB = $"{row}B";
-            if (reservedSeats.Contains(seatB)) Console.ForegroundColor = ConsoleColor.Red;
-            else if (bookedSeats.Contains(seatB)) Console.ForegroundColor = ConsoleColor.Yellow;
-            else Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"[{seatB}]".PadRight(5));
-            Console.ResetColor();
+            string seatC = $"{row}C";
+            string seatD = $"{row}D";
+
+            Console.Write($"  {row:D2}  │ ");
+            ConsoleHelper.PrintSeat(seatA, bookedSeats, reservedSeats);
+            ConsoleHelper.PrintSeat(seatB, bookedSeats, reservedSeats);
 
             // Aisle
             if (row < 10) Console.Write("      ");
@@ -40,28 +32,11 @@ public class SeatLayout45 : ISeatLayoutStrategy
             else if (row == 11)
             {
                 string seatExt = $"{row}E";
-                if (reservedSeats.Contains(seatExt)) Console.ForegroundColor = ConsoleColor.Red;
-                else if (bookedSeats.Contains(seatExt)) Console.ForegroundColor = ConsoleColor.Yellow;
-                else Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write($"[{seatExt}]".PadRight(5));
-                Console.ResetColor();
+                ConsoleHelper.PrintSeat(seatExt, bookedSeats, reservedSeats);
             }
 
-            // Column C
-            string seatC = $"{row}C";
-            if (reservedSeats.Contains(seatC)) Console.ForegroundColor = ConsoleColor.Red;
-            else if (bookedSeats.Contains(seatC)) Console.ForegroundColor = ConsoleColor.Yellow;
-            else Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"[{seatC}]".PadRight(5));
-            Console.ResetColor();
-
-            // Column D
-            string seatD = $"{row}D";
-            if (reservedSeats.Contains(seatD)) Console.ForegroundColor = ConsoleColor.Red;
-            else if (bookedSeats.Contains(seatD)) Console.ForegroundColor = ConsoleColor.Yellow;
-            else Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"[{seatD}]".PadRight(5));
-            Console.ResetColor();
+            ConsoleHelper.PrintSeat(seatC, bookedSeats, reservedSeats);
+            ConsoleHelper.PrintSeat(seatD, bookedSeats, reservedSeats);
 
             if (row < 10) Console.WriteLine("│");
             else Console.WriteLine(" │");
